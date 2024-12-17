@@ -2,12 +2,12 @@ import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import ErrorMessage from "../components/ErrorMessage";
 import { RegisterForm } from "../interfaces/FormData";
-import axios, { isAxiosError } from "axios";
-
-const { VITE_SERVER_URL } = import.meta.env;
+import { isAxiosError } from "axios";
+import { toast } from "sonner";
+import axios from "../config/axios";
 
 const RegisterView = () => {
-  const intialValues: RegisterForm = {
+  const defaultValues: RegisterForm = {
     name: "",
     email: "",
     handle: "",
@@ -18,25 +18,25 @@ const RegisterView = () => {
   const {
     register,
     watch,
+    reset,
     handleSubmit,
     formState: { errors },
-  } = useForm({ defaultValues: intialValues });
+  } = useForm({ defaultValues });
 
   const password = watch("password");
 
   const handleRegister = async (formData: RegisterForm) => {
     try {
-      const response = await axios.post(
-        `${VITE_SERVER_URL}/api/auth/register`,
-        formData
-      );
+      const response = await axios.post("/auth/register", formData);
 
       const { data } = response;
 
-      console.log(data);
+      toast.success(data);
+
+      reset();
     } catch (error) {
       if (isAxiosError(error) && error.response) {
-        console.log(error.response.data);
+        toast.error(error.response.data);
       }
     }
   };
@@ -173,11 +173,11 @@ const RegisterView = () => {
 
         <input
           type="submit"
-          className="bg-cyan-400 p-3 text-lg w-full uppercase text-slate-600 rounded-lg font-bold cursor-pointer"
+          className="bg-cyan-400 p-3 text-lg w-full uppercase text-slate-600 rounded-lg font-bold cursor-pointer border-2 border-[rgba(255,255,255,0.2)] shadow-[4px_10px_10px_rgba(0,0,0,0.3)] transition-all ease-in-out duration-300 hover:scale-105 hover:bg-[rgba(120,239,255,0.9)] hover:shadow-[7px_15px_15px_rgba(0,0,0,0.4)]"
           value="Crear Cuenta"
         />
       </form>
-      <nav className=" mt-10">
+      <nav className=" mt-16 mb-20">
         <Link
           className=" text-center text-white text-lg block"
           to="/auth/login"
