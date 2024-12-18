@@ -3,6 +3,7 @@ export interface User {
   handle: string;
   name: string;
   email: string;
+  description: string;
 }
 
 export interface RegisterForm extends Pick<User, "name" | "email" | "handle"> {
@@ -13,3 +14,5 @@ export interface RegisterForm extends Pick<User, "name" | "email" | "handle"> {
 export interface LoginForm extends Pick<User, "email"> {
   password: string;
 }
+
+export type ProfileForm = Pick<User, "handle" | "description">;

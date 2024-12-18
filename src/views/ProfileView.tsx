@@ -1,15 +1,50 @@
 import { useForm } from "react-hook-form";
 import ErrorMessage from "../components/ErrorMessage";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { ProfileForm, User } from "../interfaces/FormData";
+import axios from "../config/axios";
+import { isAxiosError } from "axios";
 
 const ProfileView = () => {
+  const queryClient = useQueryClient();
+
+  const userData: User = queryClient.getQueryData(["user"])!;
+
+  const updateProfile = async (formData: ProfileForm) => {
+    try {
+      const { data } = await axios.patch(`/user/${userData._id}`, formData);
+
+      return data;
+    } catch (error) {
+      if (isAxiosError(error) && error.response) {
+        throw Error(error.response.data);
+      }
+    }
+  };
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ defaultValues: { handle: "", description: "" } });
+  } = useForm({
+    defaultValues: {
+      handle: userData?.handle,
+      description: userData?.description,
+    },
+  });
 
-  const handleUserProfileForm = (formData: any) => {
-    console.log(formData);
+  const updateProfileMutation = useMutation({
+    mutationFn: updateProfile,
+    onError: () => {
+      console.log("Hubo un eror");
+    },
+    onSuccess: () => {
+      console.log("Todo bien");
+    },
+  });
+
+  const handleUserProfileForm = (formData: ProfileForm) => {
+    updateProfileMutation.mutate(formData);
   };
 
   return (

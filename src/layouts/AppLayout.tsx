@@ -6,7 +6,7 @@ import { User } from "../interfaces/FormData";
 import DevTree from "../components/DevTree";
 
 export default function AppLayout() {
-  const petition = async () => {
+  const getUser = async () => {
     try {
       const { data } = await axios.get<User>("/auth/user");
       return data;
@@ -18,7 +18,7 @@ export default function AppLayout() {
   };
 
   const { data, isLoading, isError } = useQuery({
-    queryFn: petition,
+    queryFn: getUser,
     queryKey: ["user"],
     retry: 1,
     refetchOnWindowFocus: false,
