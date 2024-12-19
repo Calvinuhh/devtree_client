@@ -4,6 +4,7 @@ export interface User {
   name: string;
   email: string;
   description: string;
+  image?: string;
 }
 
 export interface RegisterForm extends Pick<User, "name" | "email" | "handle"> {

@@ -4,6 +4,7 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { ProfileForm, User } from "../interfaces/FormData";
 import axios from "../config/axios";
 import { isAxiosError } from "axios";
+import { toast } from "sonner";
 
 const ProfileView = () => {
   const queryClient = useQueryClient();
@@ -12,9 +13,32 @@ const ProfileView = () => {
 
   const updateProfile = async (formData: ProfileForm) => {
     try {
-      const { data } = await axios.patch(`/user/${userData._id}`, formData);
-
+      const updatedData: Partial<ProfileForm> = {};
+      if (formData.handle !== userData.handle) {
+        updatedData.handle = formData.handle;
+      }
+      if (formData.description !== userData.description) {
+        updatedData.description = formData.description;
+      }
+      const { data } = await axios.patch(`/user/${userData._id}`, updatedData);
       return data;
+    } catch (error) {
+      if (isAxiosError(error) && error.response) {
+        throw Error(error.response.data);
+      }
+    }
+  };
+
+  const updateImage = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const { data: image }: { data: { image: string } } = await axios.post(
+        `/user/${userData._id}/image`,
+        formData
+      );
+      return image;
     } catch (error) {
       if (isAxiosError(error) && error.response) {
         throw Error(error.response.data);
@@ -35,13 +59,33 @@ const ProfileView = () => {
 
   const updateProfileMutation = useMutation({
     mutationFn: updateProfile,
-    onError: () => {
-      console.log("Hubo un eror");
+    onError: (error) => {
+      toast.error(error.message);
     },
-    onSuccess: () => {
-      console.log("Todo bien");
+    onSuccess: (data) => {
+      toast.success(data);
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
+
+  const updateImageMutation = useMutation({
+    mutationFn: updateImage,
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(["user"], (oldData: User) => {
+        window.location.reload();
+        return { ...oldData, image: data };
+      });
+    },
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      updateImageMutation.mutate(e.target.files[0]);
+    }
+  };
 
   const handleUserProfileForm = (formData: ProfileForm) => {
     updateProfileMutation.mutate(formData);
@@ -77,6 +121,10 @@ const ProfileView = () => {
           placeholder="Tu Descripción"
           {...register("description", {
             required: "La Descripcion es obligatoria",
+            maxLength: {
+              value: 100,
+              message: "La descripción no puede superar los 100 caracteres",
+            },
           })}
         />
         {errors.description && (
@@ -92,7 +140,7 @@ const ProfileView = () => {
           name="handle"
           className="border-none bg-slate-100 rounded-lg p-2"
           accept="image/*"
-          onChange={() => {}}
+          onChange={handleChange}
         />
       </div>
 
