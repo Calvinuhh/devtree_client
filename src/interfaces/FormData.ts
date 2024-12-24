@@ -18,3 +18,8 @@ export interface LoginForm extends Pick<User, "email"> {
 }
 
 export type ProfileForm = Pick<User, "handle" | "description">;
+
+export type UserHandle = Pick<
+  User,
+  "handle" | "description" | "image" | "links" | "name"
+>;
