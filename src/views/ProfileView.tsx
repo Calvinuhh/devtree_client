@@ -20,6 +20,7 @@ const ProfileView = () => {
       if (formData.description !== userData.description) {
         updatedData.description = formData.description;
       }
+
       const { data } = await axios.patch(`/user/${userData._id}`, updatedData);
       return data;
     } catch (error) {

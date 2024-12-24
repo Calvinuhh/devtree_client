@@ -2,12 +2,27 @@ import NavigationTabs from "./NavigationTabs";
 import { Link, Outlet } from "react-router-dom";
 import { Toaster } from "sonner";
 import { User } from "../interfaces/FormData";
+import { useEffect, useState } from "react";
+import Social from "../interfaces/Social";
+import DevTreeLink from "./DevTreeLink";
 
 interface DevTreeProps {
   data: User;
 }
 
 const DevTree = ({ data }: DevTreeProps) => {
+  const [enabledLinks, setEnabledLinks] = useState<Social[]>(
+    data.links
+      ? JSON.parse(data.links).filter((item: Social) => item.enabled)
+      : []
+  );
+
+  useEffect(() => {
+    setEnabledLinks(
+      JSON.parse(data.links!).filter((item: Social) => item.enabled)
+    );
+  }, [data]);
+
   return (
     <>
       <header className="bg-slate-800 py-5">
@@ -58,6 +73,11 @@ const DevTree = ({ data }: DevTreeProps) => {
                   {data.description}
                 </p>
               )}
+              <div className=" mt-20 flex flex-col gap-5">
+                {enabledLinks.map((elem) => (
+                  <DevTreeLink key={elem.name} link={elem} />
+                ))}
+              </div>
             </div>
           </div>
         </main>
