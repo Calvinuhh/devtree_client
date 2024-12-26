@@ -10,7 +10,7 @@ import HandleView from "./views/HandleView";
 import NotFoundView from "./views/NotFoundView";
 import HomeView from "./views/HomeView";
 
-function Router() {
+export function Router() {
   return (
     <>
       <BrowserRouter>
@@ -39,5 +39,3 @@ function Router() {
     </>
   );
 }
-
-export default Router;
