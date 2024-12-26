@@ -1,4 +1,5 @@
 import Header from "../components/Header";
+import SearchForm from "../components/SearchForm";
 
 const HomeView = () => {
   return (
@@ -18,6 +19,8 @@ const HomeView = () => {
               comparte tu perfil de TikTok, FaceBook, Instagram, YouTube, GitHub
               y Mas!
             </p>
+
+            <SearchForm />
           </div>
         </div>
       </main>

@@ -4,13 +4,18 @@ import ErrorMessage from "../components/ErrorMessage";
 import { RegisterForm } from "../interfaces/FormData";
 import { isAxiosError } from "axios";
 import { toast } from "sonner";
+import { useLocation } from "react-router-dom";
 import axios from "../config/axios";
+import { useNavigate } from "react-router-dom";
 
 const RegisterView = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const defaultValues: RegisterForm = {
     name: "",
     email: "",
-    handle: "",
+    handle: location?.state?.handle || "",
     password: "",
     password_confirmation: "",
   };
@@ -34,6 +39,7 @@ const RegisterView = () => {
       toast.success(data);
 
       reset();
+      navigate("/auth/login");
     } catch (error) {
       if (isAxiosError(error) && error.response) {
         toast.error(error.response.data);
