@@ -8,6 +8,7 @@ import { useLocation } from "react-router-dom";
 import axios from "../config/axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import loadingGif from "../../public/loading_gif.gif";
 
 const RegisterView = () => {
   const location = useLocation();
@@ -192,15 +193,13 @@ const RegisterView = () => {
           value={isLoading ? "Cargando..." : "Crear Cuenta"}
           disabled={isLoading}
         />
-
         {isLoading && (
           <div className="mt-5">
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-              <div
-                className="bg-blue-600 h-2.5 rounded-full animate-pulse"
-                style={{ width: "50%" }}
-              ></div>
-            </div>
+            <img
+              className=" h-[100px] w-[500px] "
+              src={loadingGif}
+              alt="loading_gif"
+            />
           </div>
         )}
       </form>

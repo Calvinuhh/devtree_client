@@ -7,6 +7,7 @@ import axios from "../config/axios";
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { useState } from "react";
+import loadingGif from "../../public/loading_gif.gif";
 
 const LoginView = () => {
   const navigate = useNavigate();
@@ -99,6 +100,15 @@ const LoginView = () => {
             value={isLoading ? "Cargando..." : "Iniciar Sesión"}
             disabled={isLoading}
           />
+          {isLoading && (
+            <div>
+              <img
+                className=" h-[100px] w-[500px] "
+                src={loadingGif}
+                alt="loading_gif"
+              />
+            </div>
+          )}
         </div>
       </form>
 
