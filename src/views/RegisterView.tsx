@@ -7,10 +7,12 @@ import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
 import axios from "../config/axios";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const RegisterView = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const defaultValues: RegisterForm = {
     name: "",
@@ -31,6 +33,7 @@ const RegisterView = () => {
   const password = watch("password");
 
   const handleRegister = async (formData: RegisterForm) => {
+    setIsLoading(true);
     try {
       const response = await axios.post("/auth/register", formData);
 
@@ -44,6 +47,8 @@ const RegisterView = () => {
       if (isAxiosError(error) && error.response) {
         toast.error(error.response.data);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -179,9 +184,25 @@ const RegisterView = () => {
 
         <input
           type="submit"
-          className="bg-cyan-400 p-3 text-lg w-full uppercase text-slate-600 rounded-lg font-bold cursor-pointer border-2 border-[rgba(255,255,255,0.2)] shadow-[4px_10px_10px_rgba(0,0,0,0.3)] transition-all ease-in-out duration-300 hover:scale-105 hover:bg-[rgba(120,239,255,0.9)] hover:shadow-[7px_15px_15px_rgba(0,0,0,0.4)]"
-          value="Crear Cuenta"
+          className={`p-3 text-lg w-full uppercase text-slate-600 rounded-lg font-bold cursor-pointer border-2 border-[rgba(255,255,255,0.2)] shadow-[4px_10px_10px_rgba(0,0,0,0.3)] transition-all ease-in-out duration-300 ${
+            isLoading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-cyan-400 hover:scale-105 hover:bg-[rgba(120,239,255,0.9)] hover:shadow-[7px_15px_15px_rgba(0,0,0,0.4)]"
+          }`}
+          value={isLoading ? "Cargando..." : "Crear Cuenta"}
+          disabled={isLoading}
         />
+
+        {isLoading && (
+          <div className="mt-5">
+            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+              <div
+                className="bg-blue-600 h-2.5 rounded-full animate-pulse"
+                style={{ width: "50%" }}
+              ></div>
+            </div>
+          </div>
+        )}
       </form>
       <nav className=" mt-16 mb-20">
         <Link

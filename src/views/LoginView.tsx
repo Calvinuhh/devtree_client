@@ -6,9 +6,11 @@ import { LoginForm } from "../interfaces/FormData";
 import axios from "../config/axios";
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
+import { useState } from "react";
 
 const LoginView = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const defaultValues: LoginForm = {
     email: "",
@@ -22,6 +24,7 @@ const LoginView = () => {
   } = useForm({ defaultValues });
 
   const handleLogin = async (formData: LoginForm) => {
+    setIsLoading(true);
     try {
       const { data } = await axios.post("/auth/login", formData);
 
@@ -31,12 +34,14 @@ const LoginView = () => {
       if (isAxiosError(error) && error.response) {
         toast.error(error.response.data);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <>
-      <h1 className=" text-4xl text-white font-bold">Iniciar Sesion</h1>
+      <h1 className="text-4xl text-white font-bold">Iniciar Sesión</h1>
 
       <form
         onSubmit={handleSubmit(handleLogin)}
@@ -80,19 +85,29 @@ const LoginView = () => {
           )}
         </div>
 
-        <input
-          type="submit"
-          className="bg-cyan-400 p-3 text-lg w-full uppercase text-slate-600 rounded-lg font-bold cursor-pointer border-2 border-[rgba(255,255,255,0.2)] shadow-[4px_10px_10px_rgba(0,0,0,0.3)] transition-all ease-in-out duration-300 hover:scale-105 hover:bg-[rgba(120,239,255,0.9)] hover:shadow-[7px_15px_15px_rgba(0,0,0,0.4)]"
-          value="Iniciar Sesión"
-        />
+        <div className="relative">
+          {isLoading && (
+            <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500 animate-pulse"></div>
+          )}
+          <input
+            type="submit"
+            className={`bg-cyan-400 p-3 text-lg w-full uppercase text-slate-600 rounded-lg font-bold cursor-pointer border-2 border-[rgba(255,255,255,0.2)] shadow-[4px_10px_10px_rgba(0,0,0,0.3)] transition-all ease-in-out duration-300 ${
+              isLoading
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:scale-105 hover:bg-[rgba(120,239,255,0.9)] hover:shadow-[7px_15px_15px_rgba(0,0,0,0.4)]"
+            }`}
+            value={isLoading ? "Cargando..." : "Iniciar Sesión"}
+            disabled={isLoading}
+          />
+        </div>
       </form>
 
-      <nav className=" mt-10 mb-20">
+      <nav className="mt-10 mb-20">
         <Link
-          className=" text-center text-white text-lg block"
+          className="text-center text-white text-lg block"
           to="/auth/register"
         >
-          ¿No tienes cuenta? Crea una aqui
+          ¿No tienes cuenta? Crea una aquí
         </Link>
       </nav>
     </>
